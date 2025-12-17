@@ -4,7 +4,7 @@ from peft import PeftModel
 
 # 1. 参数设置
 MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
-LORA_PATH = "./output_jarvis" # 你的训练结果目录
+LORA_PATH = "./output_jarvis"
 TEST_INSTRUCTION = "你是谁" # 测试问题
 
 # 2. 加载模型和分词器
@@ -17,7 +17,7 @@ print(f"正在加载 LoRA: {LORA_PATH}...")
 model = PeftModel.from_pretrained(model, LORA_PATH)
 
 
-# 4. 【核心原理】手动构建 Prompt
+# 4. 手动构建 Prompt
 prompt = (
     "<|im_start|>system\n你是一个很有用的助手。<|im_end|>\n"
     f"<|im_start|>user\n{TEST_INSTRUCTION}<|im_end|>\n"
@@ -32,8 +32,10 @@ with torch.no_grad():
     outputs = model.generate(
         **inputs,
         max_new_tokens=384,  # 最多生成多少个新字
+
         pad_token_id=tokenizer.eos_token_id, # 遇到结束符停止
         eos_token_id=tokenizer.eos_token_id,
+
         do_sample=True,      # 随机采样，让回答更生动（False则是贪婪搜索，每次只选概率最大的）
         temperature=0.1      # 随机程度
     )
